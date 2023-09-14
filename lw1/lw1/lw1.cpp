@@ -4,25 +4,28 @@
 
 DWORD WINAPI ThreadProc(CONST LPVOID lpParam)
 {
-	std::cout << lpParam << std::endl;
+	std::cout << std::to_string(*static_cast<int*>(lpParam)) << std::endl;
 	ExitThread(0);
 }
 
 int main()
 {
-	// создание двух потоков
-	HANDLE* handles = new HANDLE[2];
+	int n;
+	std::cin >> n;
 
-	handles[0] = CreateThread(NULL, 0, &ThreadProc, NULL, CREATE_SUSPENDED,
-		NULL);
-	handles[1] = CreateThread(NULL, 0, &ThreadProc, NULL, CREATE_SUSPENDED,
-		NULL);
+	HANDLE* handles = new HANDLE[n];
 
+	for (int i = 0; i < n; i++)
+	{
+		handles[i] = CreateThread(nullptr, 0, &ThreadProc, LPVOID(&i), CREATE_SUSPENDED, nullptr);
+	}
 
+	for (int i = 0; i < n; i++)
+	{
+		ResumeThread(handles[i]);
+	}
 
-	ResumeThread(handles[0]);
-	ResumeThread(handles[1]);
+	WaitForMultipleObjects(n, handles, true, INFINITE);
 
-	WaitForMultipleObjects(2, handles, true, INFINITE);
 	return 0;
 }

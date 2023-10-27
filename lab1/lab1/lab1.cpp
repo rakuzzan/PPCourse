@@ -1,6 +1,7 @@
 ﻿#include <windows.h>
 #include <string>
 #include <iostream>
+#include <vector>
 
 DWORD WINAPI ThreadProc(CONST LPVOID lpParam)
 {
@@ -13,11 +14,13 @@ int main()
 	int n;
 	std::cin >> n;
 
+	std::vector<int> threadNumbers(n);
 	HANDLE* handles = new HANDLE[n];
 
 	for (int i = 0; i < n; i++)
 	{
-		handles[i] = CreateThread(nullptr, 0, &ThreadProc, LPVOID(&i), CREATE_SUSPENDED, nullptr);
+		threadNumbers[i] = i;
+		handles[i] = CreateThread(nullptr, 0, &ThreadProc, LPVOID(&threadNumbers[i]) , CREATE_SUSPENDED, nullptr);
 	}
 
 	for (int i = 0; i < n; i++)

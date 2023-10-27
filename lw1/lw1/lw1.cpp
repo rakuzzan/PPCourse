@@ -4,7 +4,7 @@
 
 DWORD WINAPI ThreadProc(CONST LPVOID lpParam)
 {
-	std::cout << std::to_string(*static_cast<int*>(lpParam)) << std::endl;
+	printf("%d\n", *static_cast<int*>(lpParam));
 	ExitThread(0);
 }
 

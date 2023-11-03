@@ -46,7 +46,7 @@ int main()
 {
 	SYSTEM_INFO SystemInfo;
 	GetSystemInfo(&SystemInfo);
-	UINT countProcessor = (1 << 8 - 1);
+	UINT countProcessor = 1;
 	const int countThreads = 2;
 	SetProcessAffinityMask(GetCurrentProcess(), countProcessor);
 

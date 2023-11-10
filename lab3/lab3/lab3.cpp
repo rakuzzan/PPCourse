@@ -1,76 +1,48 @@
-﻿#include <iostream>
+﻿#include <windows.h>
 #include <string>
-#include <windows.h>
-#include <fstream>
+#include <iostream>
+#pragma comment(lib, "winmm.lib")
 
-std::ofstream output1("output1.txt");
-std::ofstream output2("output2.txt");
-DWORD timeOfStart;
-SYSTEMTIME sysTime;
-
-void PayLoad()
-{
-	int result;
-	for (int j = 0; j < 1'000'000; j++)
-	{
-		result = 100 / sqrt(100);
-	}
-}
+int start;
 
 DWORD WINAPI ThreadProc(CONST LPVOID lpParam)
 {
-	int payLoad;
+	int myNumber = (int)(INT_PTR)lpParam;
 
-	for (int i = 0; i < 20; i++)
+	for (int j = 1; j < 23; j++)
 	{
-		PayLoad();
-		SYSTEMTIME curTime;
-		GetSystemTime(&curTime);
 
-		DWORD currentTime = GetTickCount64();
+		for (int i = 0; i < 1000000000; i++)
+		{
+		}
 
-		int firstTime = sysTime.wSecond * 1000 + sysTime.wMilliseconds;
-		int secondTime = curTime.wSecond * 1000 + curTime.wMilliseconds;
+		int end = timeGetTime();
+		double millisec = (end - start) / ((double)CLOCKS_PER_SEC / 1000);
+		printf("Thread number %d | %f\n", myNumber + 1, millisec);
 
-		std::string dur = std::to_string(secondTime - firstTime);
-
-
-		(int(lpParam) == 2) ? (output2 << dur << std::endl)
-			: (output1 << dur << std::endl);
 	}
 
 	ExitThread(0);
 }
-
-int main()
+int main(int argc, char* argv[])
 {
-	SYSTEM_INFO SystemInfo;
-	GetSystemInfo(&SystemInfo);
-	UINT countProcessor = 1;
-	const int countThreads = 2;
-	SetProcessAffinityMask(GetCurrentProcess(), countProcessor);
+	int temp;
+	std::cin >> temp;
+	start = timeGetTime();
+	int threadNumber = std::stoi(argv[1]);
 
-	system("pause");
-
-	timeOfStart = GetTickCount64();
-	GetSystemTime(&sysTime);
-
-	HANDLE* handles = new HANDLE[countThreads];
-
-	for (int i = 0; i < countThreads; i++)
-	{
-		int ThreadCount = i + 1;
-		handles[i] = CreateThread(NULL, 0, &ThreadProc, (LPVOID)ThreadCount, CREATE_SUSPENDED, NULL);
-
-		SetThreadPriority(handles[i], i);
+	HANDLE* handles = new HANDLE[threadNumber];
+	for (int i = 0; i < threadNumber; i++) {
+		handles[i] = CreateThread(NULL, 0, &ThreadProc, (LPVOID)(INT_PTR)i, CREATE_SUSPENDED,
+			NULL);
 	}
 
-	for (int i = 0; i < countThreads; i++)
-	{
+	// запуск потоков
+	for (int i = 0; i < threadNumber; i++) {
 		ResumeThread(handles[i]);
 	}
 
-	WaitForMultipleObjects(countThreads, handles, true, INFINITE);
+	// ожидание окончания работы потоков
+	WaitForMultipleObjects(threadNumber, handles, true, INFINITE);
 	return 0;
-
 }

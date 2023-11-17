@@ -29,7 +29,7 @@ int main(int argc, char* argv[])
 	int temp;
 	std::cin >> temp;
 	start = timeGetTime();
-	int threadNumber = std::stoi(argv[1]);
+	int threadNumber = 2;
 
 	HANDLE* handles = new HANDLE[threadNumber];
 	for (int i = 0; i < threadNumber; i++) {
